@@ -1,0 +1,28 @@
+{
+  "name": "fis-lol",
+  "version": "0.0.3",
+  "description": "德玛西亚万岁",
+  "main": "lol.js",
+  "bin": {
+    "lol": "bin/lol",
+    "fis-lol": "bin/lol"
+  },  
+  "dependencies": {
+    "fis": "^1.9.18",
+    "lol-command-init": "0.0.3"
+  },
+  "devDependencies": {},
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/chyingp/fia"
+  },
+  "author": "chyingp",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/chyingp/fia/issues"
+  },
+  "homepage": "https://github.com/chyingp/fia"
+}
