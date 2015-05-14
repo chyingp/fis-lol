@@ -5,6 +5,9 @@ fis.require.prefixes = [ 'lol', 'fis' ];
 fis.cli.info = fis.util.readJSON(__dirname + '/package.json');
 fis.cli.help.commands = [ 'release', 'install', 'server', 'init' ];
 
+var beautify = require('js-beautify').js_beautify;
+
+
 // 配置
 fis.config.merge({
 	project: {
@@ -29,7 +32,13 @@ fis.config.merge({
                 isMod : true,
                 id : '$1',
                 release : '$&'
-            }			
+            },
+            {
+                reg : /^\/lego_modules\/([^\/]+)\/(\d+\.\d+\.\d+)\/(.*)\.(js)$/i,
+                isMod : true,
+                id : '$1/$3',
+                release : '$&'
+            }		
 		]
 	},
 	modules: {
@@ -82,7 +91,7 @@ fis.config.merge({
                             deps: file.requires
                         }; 
                     }                    
-                }                
+                }             
             });
 
             alias = fis.util.merge(legoAlias, moduleAlias);                                      
@@ -94,7 +103,7 @@ fis.config.merge({
                     file.extras.async.length){
                     
                     var content = file.getContent();
-                    file.setContent(content.replace(/<\/head>/, '<script>require.resourceMap({res:'+ JSON.stringify(alias) +'})</script>$&'));
+                    file.setContent(content.replace(/<\/head>/, '<script>require.resourceMap({res:'+ beautify(JSON.stringify(alias), { indent_size: 2 }) +'})</script>$&'));
                 }
             });
         }

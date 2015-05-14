@@ -1,16 +1,17 @@
 {
   "name": "fis-lol",
-  "version": "0.0.5",
+  "version": "0.0.6",
   "description": "德玛西亚万岁",
   "main": "lol.js",
   "bin": {
     "lol": "bin/lol",
     "fis-lol": "bin/lol"
-  },  
+  },
   "dependencies": {
     "fis": "^1.9.18",
-    "lol-command-init": "0.0.3",
-    "fis-postprocessor-require-async": "0.0.9"
+    "fis-postprocessor-require-async": "0.0.9",
+    "js-beautify": "^1.5.5",
+    "lol-command-init": "0.0.3"
   },
   "devDependencies": {},
   "scripts": {
