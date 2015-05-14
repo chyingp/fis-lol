@@ -13,7 +13,7 @@ fis.config.merge({
 	roadmap: {		
 		path: [
             {
-                reg : /^\/modules\/([^\/]+)\/\1\.(js)$/i,
+                reg : /^\/modules\/([^\/]+)\/index\.(js)$/i,
                 isMod : true,
                 id : '$1',
                 release : '$&'
@@ -60,29 +60,43 @@ fis.config.merge({
         postpackager: function(ret, conf, settings, opt){                
             
             var alias = {};
+            var moduleAlias = {};
+            var legoAlias = {};
             var projectPath = fis.project.getProjectPath();
             var subpath = '';
 
             fis.util.map(ret.src, function (subpath, file) {                
                 
-                if(file.isJsLike && file.isMod && subpath.match(/^\/modules\//) || subpath.match(/^\/lego_modules\//) ){
-                    alias[file.id] = {
-                        url: file.url,
-                        deps: file.requires
-                    };                                        
-                }
-                // console.log(file);
-                
+                if(file.isJsLike && file.isMod){
+
+                    if(subpath.match(/^\/modules\//)){
+                        moduleAlias[file.id] = {
+                            url: file.url,
+                            deps: file.requires
+                        }; 
+                    }
+
+                    if(subpath.match(/^\/lego_modules\//)){
+                        legoAlias[file.id] = {
+                            url: file.url,
+                            deps: file.requires
+                        }; 
+                    }                    
+                }                
             });
 
+            alias = fis.util.merge(legoAlias, moduleAlias);                                      
+
             fis.util.map(ret.src, function(subpath, file){
-                if(file.isHtmlLike){
+                if(file.isHtmlLike && 
+                    file.extras && 
+                    file.extras.async && 
+                    file.extras.async.length){
+                    
                     var content = file.getContent();
                     file.setContent(content.replace(/<\/head>/, '<script>require.resourceMap({res:'+ JSON.stringify(alias) +'})</script>$&'));
                 }
             });
-
-            // console.log(fis.project.getProjectPath());
         }
 	},
 	settings: {
