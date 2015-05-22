@@ -13,7 +13,9 @@
     "js-beautify": "^1.5.5",
     "lol-command-init": "0.0.3"
   },
-  "devDependencies": {},
+  "devDependencies": {
+    "findup-sync": "^0.2.1"
+  },
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
