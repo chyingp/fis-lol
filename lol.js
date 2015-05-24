@@ -6,7 +6,8 @@ fis.cli.info = fis.util.readJSON(__dirname + '/package.json');
 fis.cli.help.commands = [ 'release', 'install', 'server', 'init' ];
 
 var beautify = require('js-beautify').js_beautify;
-    resourceMap = 'resourceMap.json';
+    resourceMap = 'resourceMap.json',
+    mm = require('micromatch');
 
 /**
  * 找到name对应模块的依赖模块
@@ -31,7 +32,7 @@ function getConcatList(deps) {
 
     fis.util.map(deps, function(index, dep){
         file = fis.file(dep.subpath);
-        console.log(file);
+        // console.log(file);
     });
 }
 
@@ -65,6 +66,57 @@ function isInnerModule(){
  */
 function getModuleMainFile(){
     return 'index.js';
+}
+
+/**
+ * [getAlias description]
+ * @return {[type]} [description]
+ */
+function getAlias(ret){
+    console.log('getAlias is called!');
+    var result = {};    
+    var reg = /lego_modules\/(.*)\/(.*)\/package\.json/;
+    var match = null;
+    var projPackageJson = JSON.parse(ret.src['/package.json'].getContent());
+    var dependencies = projPackageJson.lego.dependencies || {};
+
+    fis.util.map(ret.src, function (subpath, file) {
+        
+        if(subpath.indexOf('/lego_modules')!==-1){        
+
+            match = subpath.match(reg);
+            if(match){
+                
+                var content = file.getContent();
+                var packageJson = JSON.parse(content);
+                var mainFile = packageJson.lego.main || 'index.js';
+
+                var moduleName = match[1];
+                var version = match[2];
+
+                result[moduleName] = subpath.replace('package.json', mainFile)
+                                            .replace(version, dependencies[moduleName] || version)
+                                            .replace('.js', '')
+                                            .replace(/^\//, '');
+            }
+        }
+
+        if(subpath.indexOf('/modules')!==-1){
+
+            reg = /modules\/(.*)\/index\.js/;            
+            match = subpath.match(reg);
+
+            if(match){                        
+
+                var moduleName = match[1];
+
+                result[moduleName] = subpath.replace('.js', '')
+                                            .replace(/^\//, '');
+            }
+        }
+    });
+    return result;
+    // console.log(beautify(JSON.stringify(result)));
 }
 
 // 配置
@@ -109,6 +161,11 @@ fis.config.merge({
                 isMod : true,
                 id : '$1',
                 release : '$&'
+            },
+            {
+                reg: '**/*.html',
+                useCache: false,
+                release: '$&'
             }
 		]
 	},
@@ -133,13 +190,14 @@ fis.config.merge({
         postpackager: function(ret, conf, settings, opt){                
             
             var alias = {};
+            var _alias = getAlias(ret, conf, settings, opt);
             var moduleAlias = {};
             var legoAlias = {};
             var projectPath = fis.project.getProjectPath();
             var subpath = '';
 
             fis.util.map(ret.src, function (subpath, file) {                
-                // console.log(subpath);
+                
                 if(file.isJsLike && file.isMod){
 
                     if(subpath.match(/^\/modules\//)){
@@ -156,7 +214,9 @@ fis.config.merge({
                             url: file.url,
                             deps: file.requires
                         }; 
-                    }                    
+                    }
+
+
                 }
             });
 
@@ -171,7 +231,11 @@ fis.config.merge({
                     file.extras.async.length){
 
                     var content = file.getContent();
-                    file.setContent(content.replace(/<\/head>/, '<script>require.resourceMap({res:'+ beautify(JSON.stringify(alias), { indent_size: 2 }) +'})</script>$&'));
+                    var script = "<script>\
+                                    require.resourceMap({res:"+ beautify(JSON.stringify(alias), { indent_size: 2 }) +"});\
+                                    require._alias("+ beautify(JSON.stringify(_alias), { indent_size: 2 }) +");\
+                                </script>$&";
+                    file.setContent(content.replace(/<\/head>/, script));
                 }
             });
 

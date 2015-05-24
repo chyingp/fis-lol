@@ -8,40 +8,14 @@
 var findup = require('findup-sync');
 
 module.exports = function(content, file, conf){
-    // var options = file.jswrapper;
-
-    // if(file.isMod || conf.wrapAll || options) {
-
-    //     var template = getConfig('template', options, conf);
-    //     var type = getConfig('type', options, conf);
-    //     var subpath = file.subpath;
-
-    //     // wrap
-    //     if(template){
-    //         content = String(template)
-    //             .split('${content}').join(content)
-    //             .split('${id}').join(file.getId());
-    //     } else if(type === 'amd') {
-    //         if(!/^\s*define\s*\(/.test(content)){
-    //             content = 'define(\'' + file.getId() + '\', function(require, exports, module){ ' + content + ' \r\n});';
-    //         }
-    //     } else {
-    //         if(!/^\s*(?:[!(]\s*|void\s+)function\(/.test(content)){
-    //             content = '!function(){try{ ' + content + ' \r\n}catch(e){}}();';
-    //         }
-    //     }
-    // }
-    // return content;
 
     var subpath = file.subpath;
 
     if(file.isMod || file.isHtmlLike){
         
         var reg = /require\('([^'"]+)'\)/g;
-
-        // 生态模块
-        if(subpath.indexOf('lego_modules')!==-1){
-
+        
+        if(subpath.indexOf('lego_modules')!==-1){   // 生态模块，lego_modules
             
             var packageJsonPath = findup('package.json', {cwd: file.dirname});
             var packageJson = require(packageJsonPath);
@@ -68,7 +42,7 @@ module.exports = function(content, file, conf){
                 return 'require(\''+ modName +'\')'
             });
 
-        }else if(subpath.indexOf('modules')!==-1){
+        }else if(subpath.indexOf('modules')!==-1){  // 业务模块，modules 内
             
             var packageJsonPath = findup('package.json', {cwd: file.dirname});
             var packageJson = require(packageJsonPath);
@@ -92,7 +66,8 @@ module.exports = function(content, file, conf){
                     }                    
                 }
                 
-                return 'require("'+ modName +'")'
+                // return 'require("'+ modName +'")'
+                return matchword;
             });
         }else if(file.isHtmlLike){
             // 分析处理 require.async
