@@ -73,7 +73,7 @@ function getModuleMainFile(){
  * @return {[type]} [description]
  */
 function getAlias(ret){
-    console.log('getAlias is called!');
+    
     var result = {};    
     var reg = /lego_modules\/(.*)\/(.*)\/package\.json/;
     var match = null;
@@ -116,7 +116,6 @@ function getAlias(ret){
         }
     });
     return result;
-    // console.log(beautify(JSON.stringify(result)));
 }
 
 // 配置
@@ -203,7 +202,8 @@ fis.config.merge({
                     if(subpath.match(/^\/modules\//)){
                         moduleAlias[file.id] = {
                             subpath: subpath,
-                            url: file.url,
+                            // url: file.url,
+                            url: file.getUrl(opt.hash, opt.domain),
                             deps: file.requires
                         }; 
                     }
@@ -211,7 +211,8 @@ fis.config.merge({
                     if(subpath.match(/^\/lego_modules\//)){
                         legoAlias[file.id] = {
                             subpath: subpath,
-                            url: file.url,
+                            // url: file.url,
+                            url: file.getUrl(opt.hash, opt.domain),
                             deps: file.requires
                         }; 
                     }
