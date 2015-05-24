@@ -198,7 +198,27 @@ fis.config.merge({
                 }
             });
 
-            alias = fis.util.merge(legoAlias, moduleAlias);                                      
+            alias = fis.util.merge(legoAlias, moduleAlias);  
+
+            // 打包配置
+            var pkgMap = {};
+            fis.util.map(ret.map.pkg, function(pkgName, pkg){
+                
+                fis.util.map(pkg.has, function(index, moduleId){
+                    if(alias[moduleId]){
+                        alias[moduleId].pkg = pkgName;
+                    }
+                });
+                pkgMap[pkgName] = {
+                    url: pkg.uri
+                };
+            });
+
+
+            var stringifiedMap = JSON.stringify({
+                res: alias,
+                pkg: pkgMap
+            });
 
             // TODO 页面级别的 sourceMap，减少文件大小
             fis.util.map(ret.src, function(subpath, file){
@@ -210,21 +230,12 @@ fis.config.merge({
 
                     var content = file.getContent();
                     var script = "<script>\
-                                    require.resourceMap({res:"+ beautify(JSON.stringify(alias), { indent_size: 2 }) +"});\
+                                    require.resourceMap("+ beautify(stringifiedMap, { indent_size: 2 }) +");\
                                     require._alias("+ beautify(JSON.stringify(_alias), { indent_size: 2 }) +");\
                                 </script>$&";
                     file.setContent(content.replace(/<\/head>/, script));
                 }
             });
-
-            // resourceMap = fis.util(fis.project.getProjectPath(), resourceMap);
-            // console.log(resourceMap);
-            // console.log(ret.map);   // 这里就可以拿到map。。。        
-            
-            // var deps = findDeps('load-inner', alias);
-            // var list = getConcatList(deps);
-            // console.log(deps);
-
         }
 	},
 	settings: {
