@@ -14,10 +14,13 @@ module.exports = function(content, file, conf){
     if(file.isMod || file.isHtmlLike){
         
         var reg = /require\('([^'"]+)'\)/g;
+        // var reg = /lego_modules\/(.*)\/(.*)\/package\.json/;
         
         if(subpath.indexOf('lego_modules')!==-1){   // 生态模块，lego_modules
+        // if(/lego_modules\/(.*)\/(.*)\/package\.json/.test(file.subpath)){
             
             var packageJsonPath = findup('package.json', {cwd: file.dirname});
+            // var packageJsonPath = file.toString();
             var packageJson = require(packageJsonPath);
             var dependencies = packageJson.lego.dependencies;            
             var version = 0;
@@ -44,31 +47,31 @@ module.exports = function(content, file, conf){
 
         }else if(subpath.indexOf('modules')!==-1){  // 业务模块，modules 内
             
-            var packageJsonPath = findup('package.json', {cwd: file.dirname});
-            var packageJson = require(packageJsonPath);
-            var dependencies = packageJson.lego.dependencies;            
-            var version = 0;
-            var mainFile = 'index';
+            // var packageJsonPath = findup('package.json', {cwd: file.dirname});
+            // var packageJson = require(packageJsonPath);
+            // var dependencies = packageJson.lego.dependencies;            
+            // var version = 0;
+            // var mainFile = 'index';
 
-            content = content.replace(reg, function(matchword, modName){
+            // content = content.replace(reg, function(matchword, modName){
                 
-                // if(modName.match(/^\./)){   // 内部模块
-                if(modName.indexOf('./')!==-1){
-                    // 备注：在 compile 模块里，类似 ./lib 这样的模块已经被转成对应的 id 了，所以也不是 ./ 开头了
-                    // modName = file.subpath.replace(/^\//, '').replace(/\.js$/, '');
-                }else{  // 外部模块
-                    if(fis.util.exists('modules/' + modName)){  // 是否modules里的模块
-                        modName = 'modules/' + modName + '/index';
-                    }else{  
-                        version = dependencies[modName];
-                        mainFile = getMainFile(modName, version);
-                        modName = 'lego_modules/' + modName + '/' + version + '/' + mainFile;
-                    }                    
-                }
+            //     // if(modName.match(/^\./)){   // 内部模块
+            //     if(modName.indexOf('./')!==-1){
+            //         // 备注：在 compile 模块里，类似 ./lib 这样的模块已经被转成对应的 id 了，所以也不是 ./ 开头了
+            //         // modName = file.subpath.replace(/^\//, '').replace(/\.js$/, '');
+            //     }else{  // 外部模块
+            //         if(fis.util.exists('modules/' + modName)){  // 是否modules里的模块
+            //             modName = 'modules/' + modName + '/index';
+            //         }else{  
+            //             version = dependencies[modName];
+            //             mainFile = getMainFile(modName, version);
+            //             modName = 'lego_modules/' + modName + '/' + version + '/' + mainFile;
+            //         }                    
+            //     }
                 
-                // return 'require("'+ modName +'")'
-                return matchword;
-            });
+            //     // return 'require("'+ modName +'")'
+            //     return matchword;
+            // });
         }else if(file.isHtmlLike){
             // 分析处理 require.async
             var packageJsonPath = findup('package.json', {cwd: file.dirname});
@@ -105,9 +108,9 @@ module.exports = function(content, file, conf){
             });
         }
 
-        if(!file.isHtmlLike){
-            content = 'define(\'' + file.getId() + '\', function(require, exports, module){\r\n' + content + ' \r\n});';    
-        }
+        // if(!file.isHtmlLike){
+        //     content = 'define(\'' + file.getId() + '\', function(require, exports, module){\r\n' + content + ' \r\n});';    
+        // }
     }
     return content;
 };

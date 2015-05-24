@@ -103,7 +103,7 @@ function getAlias(ret){
 
         if(subpath.indexOf('/modules')!==-1){
 
-            reg = /modules\/(.*)\/index\.js/;            
+            reg = /modules\/(.*)\/\1\.js/;            
             match = subpath.match(reg);
 
             if(match){                        
@@ -125,30 +125,6 @@ fis.config.merge({
 	},
 	roadmap: {		
 		path: [
-            // {
-            //     reg : /^\/modules\/([^\/]+)\/index\.(js)$/i,
-            //     isMod : true,
-            //     id : '$1',
-            //     release : '$&'
-            // },
-            // {
-            //     reg : /^\/modules\/(.*)\.(js)$/i,
-            //     isMod : true,
-            //     id : '$1',
-            //     release : '$&'
-            // },
-            // {
-            //     reg : /^\/lego_modules\/([^\/]+)\/(\d+\.\d+\.\d+)\/index\.(js)$/i,
-            //     isMod : true,
-            //     id : '$1',
-            //     release : '$&'
-            // },
-            // {
-            //     reg : /^\/lego_modules\/([^\/]+)\/(\d+\.\d+\.\d+)\/(.*)\.(js)$/i,
-            //     isMod : true,
-            //     id : '$1/$3',
-            //     release : '$&'
-            // }	
             {
                 reg: /^\/(modules\/.*)\.js$/i,
                 isMod : true,
@@ -172,16 +148,17 @@ fis.config.merge({
         preprocessor: {
             html: [
                 'components',
-                require('./plugins/preprocessor-jswrapper'),
+                // require('./plugins/preprocessor-jswrapper'),
             ],
             js:[
                 'components',
-                require('./plugins/preprocessor-jswrapper'),
+                require('./plugins/postprocessor-lego-require'),
             ]
         },      
 		postprocessor: {
 			js: [
-                // require('./plugins/postprocessor-jswrapper'), 
+                require('./plugins/postprocessor-jswrapper'),
+                // require('./plugins/postprocessor-lego-require'),
                 'require-async'
             ],
             html: ['require-async']
@@ -255,7 +232,6 @@ fis.config.merge({
             jswrapper : {
             	type: 'amd',
             	wrapAll: false
-                // template : 'try{ ${content} }catch(e){ e.message += "${id}"; throw e; }'
             }
         }
 	}
