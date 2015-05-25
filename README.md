@@ -23,6 +23,7 @@ lol releas
 
 1. 业务模块：modules下的模块，模块主入口与模块名相同。比如 `/modules/app/app.js`
 2. 生态模块：lego_modules下的模块，模块主入口由`main`字段声明，否则为`index.js`，比如`/lego_modules/jquery/2.0.0/jquery.js`
+3. 同时存在同名的业务模块、生态模块，业务模块优先
  
 ### 业务模块引用
 
