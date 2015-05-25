@@ -1,6 +1,6 @@
 {
   "name": "fis-lol",
-  "version": "0.0.8",
+  "version": "0.0.9",
   "description": "德玛西亚万岁",
   "main": "lol.js",
   "bin": {
@@ -8,13 +8,11 @@
     "fis-lol": "bin/lol"
   },
   "dependencies": {
-    "fis": "^1.9.18",
+    "findup-sync": "0.2.1",
+    "fis": "1.9.18",
     "fis-postprocessor-require-async": "0.0.9",
-    "js-beautify": "^1.5.5",
+    "js-beautify": "1.5.5",
     "lol-command-init": "0.0.3"
-  },
-  "devDependencies": {
-    "findup-sync": "^0.2.1"
   },
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
