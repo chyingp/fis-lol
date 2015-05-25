@@ -13,6 +13,7 @@ module.exports = function(ret, conf, settings, opt){
     var legoAlias = {};
     var projectPath = fis.project.getProjectPath();
     var subpath = '';
+    var paths = fis.config.get('mod.paths') || {};
 
     fis.util.map(ret.src, function (subpath, file) {                
         
@@ -21,8 +22,7 @@ module.exports = function(ret, conf, settings, opt){
             if(subpath.match(/^\/modules\//)){
                 moduleAlias[file.id] = {
                     subpath: subpath,
-                    // url: file.url,
-                    url: file.getUrl(opt.hash, opt.domain),
+                    url: paths[file.id] || file.getUrl(opt.hash, opt.domain),
                     deps: file.requires
                 }; 
             }
@@ -30,17 +30,21 @@ module.exports = function(ret, conf, settings, opt){
             if(subpath.match(/^\/lego_modules\//)){
                 legoAlias[file.id] = {
                     subpath: subpath,
-                    // url: file.url,
-                    url: file.getUrl(opt.hash, opt.domain),
+                    url: paths[file.id] || file.getUrl(opt.hash, opt.domain),
                     deps: file.requires
                 }; 
             }
-
-
         }
     });
 
     alias = fis.util.merge(legoAlias, moduleAlias);  
+
+    // path处理
+    fis.util.map(_alias, function(modName, aliasedModName){
+        if(paths[modName] && alias[aliasedModName]){
+            alias[aliasedModName].url = paths[modName];
+        }
+    });
 
     // 打包配置
     var pkgMap = {};
